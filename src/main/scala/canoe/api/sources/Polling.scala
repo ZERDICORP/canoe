@@ -10,6 +10,7 @@ import cats.syntax.functor.toFunctorOps
 import fs2.Stream
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /** Polling method of getting Telegram updates.
   *
