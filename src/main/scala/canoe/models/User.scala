@@ -1,6 +1,10 @@
 package canoe.models
 
-/** Telegram user or bot.
+import io.circe.Decoder
+import io.circe.generic.semiauto.deriveDecoder
+
+/**
+  * Telegram user or bot.
   *
   * @param id                      Unique identifier
   * @param isBot                   True, if this user is a bot
@@ -12,13 +16,18 @@ package canoe.models
   * @param canReadAllGroupMessages True, if privacy mode is disabled for the bot. Returned only in getMe.
   * @param supportsInlineQueries   True, if the bot supports inline queries. Returned only in getMe.
   */
-final case class User(id: Long,
-                      isBot: Boolean,
-                      firstName: String,
-                      lastName: Option[String],
-                      username: Option[String],
-                      languageCode: Option[String],
-                      canJoinGroups: Option[Boolean],
-                      canReadAllGroupMessages: Option[Boolean],
-                      supportsInlineQueries: Option[Boolean]
+final case class User(
+    id: Long,
+    isBot: Boolean,
+    firstName: String,
+    lastName: Option[String],
+    username: Option[String],
+    languageCode: Option[String],
+    canJoinGroups: Option[Boolean],
+    canReadAllGroupMessages: Option[Boolean],
+    supportsInlineQueries: Option[Boolean]
 )
+
+object User {
+  implicit val dec: Decoder[User] = deriveDecoder
+}
