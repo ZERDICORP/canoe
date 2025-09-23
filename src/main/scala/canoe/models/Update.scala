@@ -28,6 +28,7 @@ object Update {
       semiauto.deriveDecoder[ShippingQueryReceived].widen,
       semiauto.deriveDecoder[PreCheckoutQueryReceived].widen,
       semiauto.deriveDecoder[PollAnswerReceived].widen,
+      semiauto.deriveDecoder[MyChatMemberUpdate].widen,
       semiauto.deriveDecoder[Unknown].widen
     ).reduceLeft(_.or(_)).camelCase
 }
