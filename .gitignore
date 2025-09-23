@@ -1,7 +1,3 @@
-.bsp
-.idea
-.metals
-.vscode
-**/.bloop
-target
-**/metals.sbt
+.idea/
+**/target/
+.bsp/

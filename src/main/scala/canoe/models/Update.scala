@@ -32,6 +32,9 @@ object Update {
     ).reduceLeft(_.or(_)).camelCase
 }
 
+/** Update of chat member (join/leave, etc.) */
+final case class MyChatMemberUpdate(updateId: Long, myChatMember: ChatMember) extends Update
+
 /** New incoming message of any kind — text, photo, sticker, etc. */
 final case class MessageReceived(updateId: Long, message: TelegramMessage) extends Update
 
