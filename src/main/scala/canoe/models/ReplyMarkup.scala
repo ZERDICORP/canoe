@@ -11,10 +11,10 @@ sealed trait ReplyMarkup
 
 object ReplyMarkup {
   implicit val replyMarkupEncoder: Encoder[ReplyMarkup] = Encoder.instance {
-    case replyKeyboardMarkup: ReplyKeyboardMarkup => replyKeyboardMarkup.asJson
-    case replyKeyboardRemove: ReplyKeyboardRemove => replyKeyboardRemove.asJson
+    case replyKeyboardMarkup: ReplyKeyboardMarkup   => replyKeyboardMarkup.asJson
+    case replyKeyboardRemove: ReplyKeyboardRemove   => replyKeyboardRemove.asJson
     case inlineKeyboardMarkup: InlineKeyboardMarkup => inlineKeyboardMarkup.asJson
-    case forceReply: ForceReply => forceReply.asJson
+    case forceReply: ForceReply                     => forceReply.asJson
   }
 }
 
@@ -35,39 +35,46 @@ object ReplyMarkup {
   *                        1) users that are @mentioned in the text of the Message object;
   *                        2) if the bot's message is a reply (has replyToMessage_id), sender of the original message.
   */
-final case class ReplyKeyboardMarkup(keyboard: Seq[Seq[KeyboardButton]],
-                                     resizeKeyboard: Option[Boolean] = None,
-                                     oneTimeKeyboard: Option[Boolean] = None,
-                                     selective: Option[Boolean] = None)
-    extends ReplyMarkup
+final case class ReplyKeyboardMarkup(
+    keyboard: Seq[Seq[KeyboardButton]],
+    resizeKeyboard: Option[Boolean] = None,
+    oneTimeKeyboard: Option[Boolean] = None,
+    selective: Option[Boolean] = None
+) extends ReplyMarkup
 
 object ReplyKeyboardMarkup {
 
   /**
     * Markup with a single big button.
     */
-  def singleButton(button: KeyboardButton,
-                   resizeKeyboard: Option[Boolean] = None,
-                   oneTimeKeyboard: Option[Boolean] = None,
-                   selective: Option[Boolean] = None): ReplyKeyboardMarkup =
+  def singleButton(
+      button: KeyboardButton,
+      resizeKeyboard: Option[Boolean] = None,
+      oneTimeKeyboard: Option[Boolean] = None,
+      selective: Option[Boolean] = None
+  ): ReplyKeyboardMarkup =
     ReplyKeyboardMarkup(Seq(Seq(button)), resizeKeyboard, oneTimeKeyboard, selective)
 
   /**
     * Markup with a single row of buttons.
     */
-  def singleRow(buttonRow: Seq[KeyboardButton],
-                resizeKeyboard: Option[Boolean] = None,
-                oneTimeKeyboard: Option[Boolean] = None,
-                selective: Option[Boolean] = None): ReplyKeyboardMarkup =
+  def singleRow(
+      buttonRow: Seq[KeyboardButton],
+      resizeKeyboard: Option[Boolean] = None,
+      oneTimeKeyboard: Option[Boolean] = None,
+      selective: Option[Boolean] = None
+  ): ReplyKeyboardMarkup =
     ReplyKeyboardMarkup(Seq(buttonRow), resizeKeyboard, oneTimeKeyboard, selective)
 
   /**
     * Markup with a single column of stacked buttons.
     */
-  def singleColumn(buttonColumn: Seq[KeyboardButton],
-                   resizeKeyboard: Option[Boolean] = None,
-                   oneTimeKeyboard: Option[Boolean] = None,
-                   selective: Option[Boolean] = None): ReplyKeyboardMarkup =
+  def singleColumn(
+      buttonColumn: Seq[KeyboardButton],
+      resizeKeyboard: Option[Boolean] = None,
+      oneTimeKeyboard: Option[Boolean] = None,
+      selective: Option[Boolean] = None
+  ): ReplyKeyboardMarkup =
     ReplyKeyboardMarkup(buttonColumn.map(Seq(_)), resizeKeyboard, oneTimeKeyboard, selective)
 }
 

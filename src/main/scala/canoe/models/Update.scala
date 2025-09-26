@@ -3,9 +3,9 @@ package canoe.models
 import canoe.marshalling.codecs._
 import canoe.models.messages.TelegramMessage
 import cats.syntax.functor._
-import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.generic.semiauto
+import io.circe.{Decoder, HCursor}
 
 sealed trait Update {
   def updateId: Long
@@ -13,7 +13,13 @@ sealed trait Update {
 
 object Update {
 
-  final case class Unknown(updateId: Long) extends Update
+  final case class Unknown(updateId: Long, raw: String) extends Update
+
+  implicit val unknownDecoder: Decoder[Unknown] = Decoder.instance { cursor: HCursor =>
+    val raw      = cursor.value.noSpaces
+    val updateId = cursor.downField("updateId").as[Long].getOrElse(-1L)
+    Right(Update.Unknown(updateId, raw))
+  }
 
   implicit val updateDecoder: Decoder[Update] =
     List[Decoder[Update]](
@@ -29,12 +35,12 @@ object Update {
       semiauto.deriveDecoder[PreCheckoutQueryReceived].widen,
       semiauto.deriveDecoder[PollAnswerReceived].widen,
       semiauto.deriveDecoder[MyChatMemberUpdate].widen,
-      semiauto.deriveDecoder[Unknown].widen
+      unknownDecoder.widen
     ).reduceLeft(_.or(_)).camelCase
 }
 
 /** Update of chat member (join/leave, etc.) */
-final case class MyChatMemberUpdate(updateId: Long, myChatMember: ChatMember) extends Update
+final case class MyChatMemberUpdate(updateId: Long, myChatMember: ChatMemberUpdated) extends Update
 
 /** New incoming message of any kind — text, photo, sticker, etc. */
 final case class MessageReceived(updateId: Long, message: TelegramMessage) extends Update

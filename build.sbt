@@ -1,4 +1,4 @@
-ThisBuild / version := "0.1.0"
+ThisBuild / version      := "0.1.0"
 ThisBuild / scalaVersion := "2.13.8"
 
 lazy val canoe = project
@@ -19,6 +19,5 @@ lazy val canoe = project
       "io.circe"      %% "circe-parser"        % "0.14.1",
       "org.typelevel" %% "log4cats-core"       % "2.3.2"
     ),
-    addCompilerPlugin(("org.typelevel" % "kind-projector" % "0.13.2").cross(CrossVersion.full)),
     addCompilerPlugin("org.augustjune" %% "context-applied" % "0.1.4")
   )

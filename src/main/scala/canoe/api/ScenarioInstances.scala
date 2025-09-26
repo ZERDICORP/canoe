@@ -1,12 +1,12 @@
 package canoe.api
 
 import cats.arrow.FunctionK
-import cats.{MonadThrow, StackSafeMonad, ~>}
+import cats.{MonadThrow, StackSafeMonad}
 
 trait ScenarioInstances {
 
-  implicit def scenarioMonadThrowInstance[F[_]]: MonadThrow[Scenario[F, *]] =
-    new MonadThrow[Scenario[F, *]] with StackSafeMonad[Scenario[F, *]] {
+  implicit def scenarioMonadThrowInstance[F[_]]: MonadThrow[({ type L[A] = Scenario[F, A] })#L] =
+    new MonadThrow[({ type L[A] = Scenario[F, A] })#L] with StackSafeMonad[({ type L[A] = Scenario[F, A] })#L] {
 
       def pure[A](x: A): Scenario[F, A] =
         Scenario.pure(x)
@@ -21,6 +21,8 @@ trait ScenarioInstances {
         fa.flatMap(f)
     }
 
-  implicit def scenarioFunctionKInstance[F[_]]: F ~> Scenario[F, *] =
-    FunctionK.lift(Scenario.eval)
+  implicit def scenarioFunctionKInstance[F[_]]: FunctionK[F, ({ type L[A] = Scenario[F, A] })#L] =
+    new FunctionK[F, ({ type L[A] = Scenario[F, A] })#L] {
+      def apply[A](fa: F[A]): Scenario[F, A] = Scenario.eval(fa)
+    }
 }
