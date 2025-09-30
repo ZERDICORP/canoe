@@ -6,16 +6,16 @@ import canoe.models.{InputFile, Response => TelegramResponse}
 import cats.effect.Concurrent
 import cats.syntax.all._
 import fs2.Stream
-import org.typelevel.log4cats.Logger
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
+import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.{Multipart, Part}
+import org.typelevel.log4cats.Logger
 
 private[api] class Http4sTelegramClient[F[_]: Concurrent: Logger](token: String, client: Client[F])
-    extends TelegramClient[F]
-    with Http4sClientDsl[F] {
+    extends TelegramClient[F] with Http4sClientDsl[F] {
 
   private val botApiUri: Uri = Uri.unsafeFromString("https://api.telegram.org") / s"bot$token"
 
@@ -41,7 +41,12 @@ private[api] class Http4sTelegramClient[F[_]: Concurrent: Logger](token: String,
 
   private def prepareRequest[Req, Res](url: Uri, method: Method[Req, Res], action: Req): Request[F] = {
     val uploads = method.attachments(action).collect { case (name, InputFile.Upload(filename, contents)) =>
-      Part.fileData(name, filename, Stream.emits(contents).covary[F])
+      Part.fileData(
+        name,
+        filename,
+        Stream.emits(contents).covary[F],
+        `Content-Type`(MediaType.application.`octet-stream`)
+      )
     }
 
     if (uploads.isEmpty) jsonRequest(url, method, action)
@@ -51,18 +56,21 @@ private[api] class Http4sTelegramClient[F[_]: Concurrent: Logger](token: String,
   private def jsonRequest[Req, Res](url: Uri, method: Method[Req, Res], action: Req): Request[F] =
     Method.POST(action, url)(jsonEncoderOf(method.encoder))
 
-  private def multipartRequest[Req, Res](url: Uri,
-                                         method: Method[Req, Res],
-                                         action: Req,
-                                         parts: List[Part[F]]
+  private def multipartRequest[Req, Res](
+      url: Uri,
+      method: Method[Req, Res],
+      action: Req,
+      parts: List[Part[F]]
   ): Request[F] = {
+    val uploadNames = parts.flatMap(_.name).toSet
+
     val params =
       method
         .encoder(action)
         .asObject
         .map(
           _.toIterable
-            .filterNot(kv => kv._2.isNull || kv._2.isObject)
+            .filterNot { case (k, v) => v.isNull || v.isObject || uploadNames.contains(k) }
             .map {
               case (k, j) if j.isString => k -> j.asString.get
               case (k, j)               => k -> j.toString
@@ -70,7 +78,7 @@ private[api] class Http4sTelegramClient[F[_]: Concurrent: Logger](token: String,
             .toMap
         )
         .getOrElse(Map.empty)
-        .map(x => Part.formData[F](x._1, x._2))
+        .map { case (k, v) => Part.formData[F](k, v) }
 
     val multipart = Multipart[F](parts.toVector ++ params.toVector)
 

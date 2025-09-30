@@ -2,7 +2,8 @@ package canoe.models
 
 import io.circe.{Encoder, Json}
 
-/** This object represents the contents of a file to be uploaded.
+/**
+  * This object represents the contents of a file to be uploaded.
   * Must be posted using multipart/form-data in the usual way that files are uploaded via the browser.
   *
   * Resending files without reuploading
@@ -30,9 +31,9 @@ object InputFile {
     */
   final case class Existing(key: String) extends InputFile
 
-  def fromUrl(url: String): InputFile = Existing(url)
-  def fromFileId(fileId: String): InputFile = Existing(fileId)
-  def fromBytes(name: String, bytes: Array[Byte]) = Upload(name, bytes)
+  def fromUrl(url: String): InputFile                        = Existing(url)
+  def fromFileId(fileId: String): InputFile                  = Existing(fileId)
+  def fromBytes(name: String, bytes: Array[Byte]): InputFile = Upload(name, bytes)
 
   implicit def inputFileEncoder: Encoder[InputFile] = Encoder.instance[InputFile] {
     case InputFile.Upload(n, _)     => Json.fromString(s"attach://$n")
