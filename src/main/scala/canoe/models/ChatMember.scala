@@ -25,6 +25,14 @@ object ChatMember {
   }
 }
 
+object LeftOrKickedMember {
+  def unapply(member: Any): Option[ChatMember] = member match {
+    case m: LeftMember   => Some(m)
+    case m: KickedMember => Some(m)
+    case _               => None
+  }
+}
+
 final case class ChatCreator(user: User) extends ChatMember
 
 final case class OrdinaryMember(user: User) extends ChatMember
@@ -33,27 +41,29 @@ final case class LeftMember(user: User) extends ChatMember
 
 final case class KickedMember(user: User, untilDate: Option[Int]) extends ChatMember
 
-final case class ChatAdministrator(user: User,
-                                   customTitle: Option[String],
-                                   canBeEdited: Option[Boolean],
-                                   canChangeInfo: Option[Boolean],
-                                   canPostMessages: Option[Boolean],
-                                   canEditMessages: Option[Boolean],
-                                   canDeleteMessages: Option[Boolean],
-                                   canRestrictMembers: Option[Boolean],
-                                   canPromoteMembers: Option[Boolean],
-                                   canInviteUsers: Option[Boolean],
-                                   canPinMessages: Option[Boolean])
-    extends ChatMember
+final case class ChatAdministrator(
+    user: User,
+    customTitle: Option[String],
+    canBeEdited: Option[Boolean],
+    canChangeInfo: Option[Boolean],
+    canPostMessages: Option[Boolean],
+    canEditMessages: Option[Boolean],
+    canDeleteMessages: Option[Boolean],
+    canRestrictMembers: Option[Boolean],
+    canPromoteMembers: Option[Boolean],
+    canInviteUsers: Option[Boolean],
+    canPinMessages: Option[Boolean]
+) extends ChatMember
 
-final case class RestrictedMember(user: User,
-                                  untilDate: Option[Int],
-                                  isMember: Option[Boolean],
-                                  canChangeInfo: Option[Boolean],
-                                  canInviteUsers: Option[Boolean],
-                                  canPinMessages: Option[Boolean],
-                                  canSendMessages: Option[Boolean],
-                                  canSendMediaMessages: Option[Boolean],
-                                  canSendOtherMessages: Option[Boolean],
-                                  canAddWebPagePreviews: Option[Boolean])
-    extends ChatMember
+final case class RestrictedMember(
+    user: User,
+    untilDate: Option[Int],
+    isMember: Option[Boolean],
+    canChangeInfo: Option[Boolean],
+    canInviteUsers: Option[Boolean],
+    canPinMessages: Option[Boolean],
+    canSendMessages: Option[Boolean],
+    canSendMediaMessages: Option[Boolean],
+    canSendOtherMessages: Option[Boolean],
+    canAddWebPagePreviews: Option[Boolean]
+) extends ChatMember
