@@ -2,7 +2,7 @@ package canoe.models.messages
 
 import canoe.models.{Chat, Document, MessageEntity, User}
 import io.circe.Decoder
-import io.circe.generic.semiauto
+import io.circe.generic.semiauto.deriveDecoder
 
 final case class DocumentMessage(
     messageId: Int,
@@ -25,5 +25,5 @@ final case class DocumentMessage(
 ) extends UserMessage
 
 object DocumentMessage {
-  implicit val entityDecoder: Decoder[DocumentMessage] = semiauto.deriveDecoder[DocumentMessage]
+  implicit val entityDecoder: Decoder[DocumentMessage] = deriveDecoder
 }
