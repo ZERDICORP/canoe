@@ -1,10 +1,11 @@
-ThisBuild / version      := "0.1.0"
-ThisBuild / scalaVersion := "2.13.16"
-
+### Usage
+Clone the repository, then add the following to your `build.sbt`:
+```
 lazy val canoe = project
-  .in(file("."))
+  .in(file("libs/canoe"))
   .settings(
     name := "canoe",
+    scalaVersion := "2.13.8",
     libraryDependencies ++= Seq(
       "org.http4s"    %% "http4s-dsl"          % "0.23.11",
       "org.http4s"    %% "http4s-blaze-client" % "0.23.11",
@@ -21,3 +22,4 @@ lazy val canoe = project
     ),
     addCompilerPlugin("org.augustjune" %% "context-applied" % "0.1.4")
   )
+```
